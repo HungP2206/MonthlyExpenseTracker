@@ -17,42 +17,47 @@ public class CategoryRepository : ICategoryRepository
     public async Task<List<Category>> GetByUserIdAsync(string userId)
     {
         return await _context.Categories
+            .AsNoTracking()
             .Where(x => x.ApplicationUserId == userId)
             .OrderBy(x => x.Name)
             .ToListAsync();
     }
 
-    public async Task<Category?> GetByIdAsync(int id)
-    {
-        return await _context.Categories
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<Category?> GetByIdAndUserIdAsync(int id, string userId)
+    public async Task<Category?> GetByIdAndUserIdAsync(int categoryId, string userId)
     {
         return await _context.Categories
             .FirstOrDefaultAsync(x =>
-                x.Id == id &&
-                x.ApplicationUserId == userId);
+            x.Id == categoryId &&
+            x.ApplicationUserId == userId);
+    }
+    public async Task<bool> ExistsByNameAsync(string userId, string CategoryName)
+    {
+        return await _context.Categories
+            .AnyAsync(x => 
+            x.ApplicationUserId == userId &&
+            x.Name == CategoryName);
     }
 
-    public async Task<bool> ExistsByNameAsync(string userId, string name)
+    public async Task<bool> ExistsByNameExceptIdAsync(string userId, int excludedCategoryId, string name)
     {
         return await _context.Categories
             .AnyAsync(x =>
                 x.ApplicationUserId == userId &&
-                x.Name == name);
+                x.Name == name &&
+                x.Id != excludedCategoryId);
     }
 
-    public async Task<bool> IsUsedAsync(int categoryId)
+    public async Task<bool> IsUsedAsync(string userId, int CategoryId)
     {
-        return await _context.Transactions
-            .AnyAsync(x => x.CategoryId == categoryId);
+        return await _context.Categories
+            .AnyAsync(x =>
+                x.ApplicationUserId == userId &&
+                x.Id != CategoryId);
     }
 
-    public async Task AddAsync(Category category)
+    public void Add(Category category)
     {
-        await _context.Categories.AddAsync(category);
+         _context.Categories.Add(category);
     }
 
     public void Update(Category category)
@@ -60,13 +65,14 @@ public class CategoryRepository : ICategoryRepository
         _context.Categories.Update(category);
     }
 
-    public void Remove(Category category)
+    public void Delete(Category category)
     {
         _context.Categories.Remove(category);
     }
 
-    public async Task SaveChangesAsync()
+    public async Task<int> SaveChangesAsync()
     {
-        await _context.SaveChangesAsync();
+        return await _context.SaveChangesAsync();
     }
+
 }
