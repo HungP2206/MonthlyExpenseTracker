@@ -5,6 +5,7 @@
         public bool Succeeded { get; private set; }
 
         public string? ErrorMessage { get; private set; }
+        public string? FieldName { get; private set; }
         //public string? ErrorCode { get; private set; }
 
         public static ServiceResult Success()
@@ -15,12 +16,13 @@
             };
         }
 
-        public static ServiceResult Failure(string errorMessage)
+        public static ServiceResult Failure(string errorMessage, string? fieldName = null)
         {
             return new ServiceResult
             {
                 Succeeded = false,
-                ErrorMessage = errorMessage
+                ErrorMessage = errorMessage,
+                FieldName = fieldName
             };
         }
     }

@@ -1,0 +1,57 @@
+﻿@model List<MonthlyExpenseTracker.ViewModels.Categories.CategoryListItemViewModel>
+
+@{
+    ViewData["Tittile"] = "Categories";
+}
+
+<h1>Categories</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>
+                    @if (category.IsActive)
+                    {
+                        <span>Active</span>
+                    }
+                    else
+                    {
+                        <span>Inactive</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+                @if (category.IsActive)
+                {
+                    <form asp-action="SetDeactivateStatus" asp-route-id="@category.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn ngừng sử dụng danh mục này không?');">
+                            Deactivate
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="SetActivateStatus" asp-route-id="@category.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc muốn kích hoạt lại danh mục này không?');">
+                            Activate
+                        </button>
+                    </form>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+

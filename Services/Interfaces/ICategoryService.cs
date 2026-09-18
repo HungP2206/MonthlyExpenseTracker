@@ -12,5 +12,6 @@ public interface ICategoryService
 
     Task<ServiceResult> UpdateAsync(CategoryEditViewModel model, string userId);
 
-    Task<ServiceResult> DeleteAsync(CategoryEditViewModel model, string userId);
+    Task<ServiceResult> SetStatusAsync(CategoryEditViewModel model, string userId, bool isActive);
+
 }

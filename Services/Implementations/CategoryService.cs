@@ -24,7 +24,7 @@ public class CategoryService : ICategoryService
 
         if (isExistCategory)
         {
-            return ServiceResult.Failure(ErrorMessages.CategoryNameExists);
+            return ServiceResult.Failure(ErrorMessages.CategoryNameExists, name);
         }
 
         var category = new Category
@@ -96,27 +96,18 @@ public class CategoryService : ICategoryService
         return ServiceResult.Success();
     }
 
-    public async Task<ServiceResult> DeleteAsync(CategoryEditViewModel model, string userId)
+    public async Task<ServiceResult> SetStatusAsync(CategoryEditViewModel model, string userId, bool isActive)
     {
         var category = await _categoryRepository.GetByIdAndUserIdAsync(model.Id, userId);
         if (category == null)
         {
             return ServiceResult.Failure(ErrorMessages.CategoryNotFound);
         }
-        var categoryId = model.Id;
-        var isUsed = await _categoryRepository.IsUsedAsync(userId, categoryId);
 
-        if (isUsed)
-        {
-            category.IsActive = false;
-            category.UpdatedAt = DateTime.UtcNow;
+        category.IsActive = isActive;
+        category.UpdatedAt = DateTime.UtcNow;
 
-            _categoryRepository.Update(category);
-        }
-        else
-        {
-            _categoryRepository.Delete(category);
-        }
+        _categoryRepository.Update(category);
 
         await _categoryRepository.SaveChangesAsync();
 
