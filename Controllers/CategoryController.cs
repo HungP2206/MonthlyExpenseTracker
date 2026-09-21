@@ -109,7 +109,7 @@ namespace MonthlyExpenseTracker.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> SetDeactivateStatus(CategoryEditViewModel model, bool isActive)
+        public async Task<IActionResult> SetDeactivateStatus(CategoryEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -123,7 +123,7 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var result = await _categoryService.SetStatusAsync(model, userId, isActive);
+            var result = await _categoryService.SetStatusAsync(model, userId, false);
 
             if (!result.Succeeded)
             {
@@ -136,7 +136,7 @@ namespace MonthlyExpenseTracker.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> SetActivateStatus(CategoryEditViewModel model, bool isActive)
+        public async Task<IActionResult> SetActivateStatus(CategoryEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -150,7 +150,7 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var result = await _categoryService.SetStatusAsync(model, userId, isActive);
+            var result = await _categoryService.SetStatusAsync(model, userId, true);
 
             if (!result.Succeeded)
             {
