@@ -1,4 +1,4 @@
-﻿using MonthlyExpenseTracker.ViewModels.Categories;
+﻿using MonthlyExpenseTracker.ViewModels.Category;
 using MonthlyExpenseTracker.Common;
 namespace MonthlyExpenseTracker.Services.Interfaces;
 

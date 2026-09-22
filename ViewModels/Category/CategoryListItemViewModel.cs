@@ -1,4 +1,4 @@
-﻿namespace MonthlyExpenseTracker.ViewModels.Categories
+﻿namespace MonthlyExpenseTracker.ViewModels.Category
 {
     public class CategoryListItemViewModel
     {

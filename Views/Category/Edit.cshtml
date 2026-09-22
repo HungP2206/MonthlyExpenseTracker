@@ -1,4 +1,4 @@
-﻿@model MonthlyExpenseTracker.ViewModels.Categories.CategoryEditViewModel
+﻿@model MonthlyExpenseTracker.ViewModels.Category.CategoryEditViewModel
 
 @{
     ViewData["Title"] = "Edit Category";
@@ -6,10 +6,10 @@
 
 <h1>Edit Category</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" asp-route-id="@Model.Id">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Id"/>
 
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 

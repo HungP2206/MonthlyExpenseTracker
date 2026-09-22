@@ -23,12 +23,21 @@ public class CategoryRepository : ICategoryRepository
             .ToListAsync();
     }
 
-    public async Task<Category?> GetByIdAndUserIdAsync(int categoryId, string userId)
+    public async Task<Category?> GetByIdAndUserIdAsync(string userId, int categoryId)
     {
         return await _context.Categories
             .FirstOrDefaultAsync(x =>
             x.Id == categoryId &&
             x.ApplicationUserId == userId);
+    }
+
+    public async Task<List<Category>> GetActiveByUserIdAsync(string userId)
+    {
+        return await _context.Categories
+           .AsNoTracking()
+           .Where(x => x.ApplicationUserId == userId && x.IsActive)
+           .OrderBy(x => x.Name)
+           .ToListAsync();
     }
     public async Task<bool> ExistsByNameAsync(string userId, string CategoryName)
     {

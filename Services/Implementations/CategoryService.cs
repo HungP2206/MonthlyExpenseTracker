@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MonthlyExpenseTracker.Common;
-using MonthlyExpenseTracker.Data;
+﻿using MonthlyExpenseTracker.Common;
 using MonthlyExpenseTracker.Models;
 using MonthlyExpenseTracker.Repositories.Interfaces;
 using MonthlyExpenseTracker.Services.Interfaces;
-using MonthlyExpenseTracker.ViewModels.Categories;
-using System.Xml.Linq;
+using MonthlyExpenseTracker.ViewModels.Category;
 
 namespace MonthlyExpenseTracker.Services.Implementations;
 
@@ -54,7 +51,7 @@ public class CategoryService : ICategoryService
 
     public async Task<CategoryEditViewModel?> GetEditModelAsync(int categoryId, string userId)
     {
-        var category = await _categoryRepository.GetByIdAndUserIdAsync(categoryId, userId);
+        var category = await _categoryRepository.GetByIdAndUserIdAsync(userId, categoryId);
 
         if (category == null)
         {
@@ -71,7 +68,7 @@ public class CategoryService : ICategoryService
 
     public async Task<ServiceResult> UpdateAsync(CategoryEditViewModel model, string userId)
     {
-        var category = await _categoryRepository.GetByIdAndUserIdAsync(model.Id, userId);
+        var category = await _categoryRepository.GetByIdAndUserIdAsync(userId, model.Id);
         if (category == null)
         {
             return ServiceResult.Failure(ErrorMessages.CategoryNotFound);
@@ -98,7 +95,7 @@ public class CategoryService : ICategoryService
 
     public async Task<ServiceResult> SetStatusAsync(CategoryEditViewModel model, string userId, bool isActive)
     {
-        var category = await _categoryRepository.GetByIdAndUserIdAsync(model.Id, userId);
+        var category = await _categoryRepository.GetByIdAndUserIdAsync(userId, model.Id);
         if (category == null)
         {
             return ServiceResult.Failure(ErrorMessages.CategoryNotFound);

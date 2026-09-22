@@ -6,7 +6,8 @@ namespace MonthlyExpenseTracker.Repositories.Interfaces
     {
         Task<List<Category>> GetByUserIdAsync(string userId);
 
-        Task<Category?> GetByIdAndUserIdAsync(int id, string userId);
+        Task<Category?> GetByIdAndUserIdAsync(string userId,int id);
+        Task<List<Category>> GetActiveByUserIdAsync(string userId);
 
         Task<bool> ExistsByNameAsync(string userId, string name);
 

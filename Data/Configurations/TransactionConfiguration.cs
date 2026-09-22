@@ -65,10 +65,6 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .HasForeignKey(x => x.ApplicationUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Tự động loại bỏ Transaction đã soft delete
-        // khỏi các truy vấn thông thường
-        builder.HasQueryFilter(x => !x.IsDeleted);
-
         // Hỗ trợ truy vấn Transaction theo user
         builder.HasIndex(x => x.ApplicationUserId);
 

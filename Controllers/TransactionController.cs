@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonthlyExpenseTracker.Services.Interfaces;
-using MonthlyExpenseTracker.ViewModels.Category;
+using MonthlyExpenseTracker.ViewModels.Transaction;
 using System.Security.Claims;
 
 namespace MonthlyExpenseTracker.Controllers
 {
     [Authorize]
-    public class CategoryController : Controller
+    public class TransactionController : Controller
     {
-        private readonly ICategoryService _categoryService;
+        private readonly ITransactionService _transactionService;
 
-        public CategoryController(ICategoryService categoryService)
+        public TransactionController(ITransactionService transactionService)
         {
-            _categoryService = categoryService;
+            _transactionService = transactionService;
         }
 
         public async Task<IActionResult> Index()
@@ -24,20 +24,30 @@ namespace MonthlyExpenseTracker.Controllers
             {
                 return Unauthorized();
             }
-            var categories = await _categoryService.GetCategoriesAsync(userId);
 
-            return View(categories);
+            var transactions = await _transactionService.GetByUserIdAsync(userId);
+
+            return View(transactions);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new CategoryCreateViewModel());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var model = await _transactionService.GetTransactionCreateViewModelAsync(userId);
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CategoryCreateViewModel model)
+        public async Task<IActionResult> Create(TransactionCreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -51,7 +61,7 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var result = await _categoryService.CreateAsync(model, userId);
+            var result = await _transactionService.CreateAsync(model, userId);
 
             if (!result.Succeeded)
             {
@@ -65,7 +75,7 @@ namespace MonthlyExpenseTracker.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int categoryId)
+        public async Task<IActionResult> Edit(int transactionId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -74,7 +84,7 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var model = await _categoryService.GetEditModelAsync(categoryId, userId);
+            var model = await _transactionService.GetEditModelAsync(transactionId, userId);
 
             if (model == null)
             {
@@ -86,12 +96,18 @@ namespace MonthlyExpenseTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(CategoryEditViewModel model)
+        //public async Task<IActionResult> Edit(TransactionEditViewModel model, int transactionId)
+
+        public async Task<IActionResult> Edit(TransactionEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+            //if (transactionId != model.Id)
+            //{
+            //    return NotFound();
+            //}
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -100,7 +116,7 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var result = await _categoryService.UpdateAsync(model, userId);
+            var result = await _transactionService.UpdateAsync(model, userId);
 
             if (!result.Succeeded)
             {
@@ -110,15 +126,12 @@ namespace MonthlyExpenseTracker.Controllers
                 return View(model);
             }
             return RedirectToAction(nameof(Index));
-
         }
+
         [HttpPost]
-        public async Task<IActionResult> SetDeactivateStatus(CategoryEditViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int transactionId)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -127,25 +140,21 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var result = await _categoryService.SetStatusAsync(model, userId, false);
+            var result = await _transactionService.DeleteAsync(transactionId, userId);
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(
-                    result.FieldName ?? string.Empty,
-                    result.ErrorMessage ?? "Error");
-                return View(model);
+                return NotFound();
+                //TempData["ErrorMessage"] = result.ErrorMessage;
+                //return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Index));
-
         }
+
         [HttpPost]
-        public async Task<IActionResult> SetActivateStatus(CategoryEditViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(int transactionId)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -154,17 +163,15 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            var result = await _categoryService.SetStatusAsync(model, userId, true);
+            var result = await _transactionService.RestoreAsync(transactionId, userId);
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(
-                    result.FieldName ?? string.Empty,
-                    result.ErrorMessage ?? "Error");
-                return View(model);
+                return NotFound();
             }
             return RedirectToAction(nameof(Index));
-
         }
+
+
     }
 }
