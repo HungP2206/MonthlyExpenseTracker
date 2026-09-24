@@ -4,7 +4,7 @@ namespace MonthlyExpenseTracker.ViewModels.Transaction
 {
     public class TransactionEditViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public decimal Amount { get; set; }
 
@@ -12,7 +12,7 @@ namespace MonthlyExpenseTracker.ViewModels.Transaction
 
         public string? Note { get; set; }
 
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
         public bool isDelete { get; set; }
 

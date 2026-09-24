@@ -6,14 +6,14 @@ namespace MonthlyExpenseTracker.Repositories.Interfaces
     {
         Task<List<Category>> GetByUserIdAsync(string userId);
 
-        Task<Category?> GetByIdAndUserIdAsync(string userId,int id);
+        Task<Category?> GetByIdAndUserIdAsync(string userId, Guid id);
         Task<List<Category>> GetActiveByUserIdAsync(string userId);
 
         Task<bool> ExistsByNameAsync(string userId, string name);
 
-        Task<bool> ExistsByNameExceptIdAsync(string userId, int Id, string name);
+        Task<bool> ExistsByNameExceptIdAsync(string userId, Guid Id, string name);
 
-        Task<bool> IsUsedAsync(string userId, int Id);
+        Task<bool> IsUsedAsync(string userId, Guid Id);
 
         void Add(Category category);
 

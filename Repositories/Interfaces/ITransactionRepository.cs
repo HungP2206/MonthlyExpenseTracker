@@ -6,10 +6,10 @@ namespace MonthlyExpenseTracker.Repositories.Interfaces
     {
         Task<List<Transaction>> GetByUserIdAsync(string userId);
 
-        Task<Transaction?> GetByIdAndUserIdAsync(string userId, int id);
+        Task<Transaction?> GetByIdAndUserIdAsync(string userId, Guid id);
 
         Task<List<Transaction>> GetDeletedByUserIdAsync(string userId);
-        Task<Transaction?> GetDeletedByIdAndUserIdAsync(string userId, int id);
+        Task<Transaction?> GetDeletedByIdAndUserIdAsync(string userId, Guid id);
 
         void Add(Transaction transaction);
 

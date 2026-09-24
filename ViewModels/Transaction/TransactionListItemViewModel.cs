@@ -4,7 +4,7 @@ namespace MonthlyExpenseTracker.ViewModels.Transaction
 {
     public class TransactionListItemViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public decimal Amount { get; set; }
 

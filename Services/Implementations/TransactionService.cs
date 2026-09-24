@@ -77,7 +77,7 @@ public class TransactionService : ITransactionService
         })];
     }
 
-    public async Task<TransactionEditViewModel?> GetEditModelAsync(int transactionId, string userId)
+    public async Task<TransactionEditViewModel?> GetEditModelAsync(Guid transactionId, string userId)
     {
         var transaction = await _transactionRepository.GetByIdAndUserIdAsync(userId, transactionId);
 
@@ -134,7 +134,7 @@ public class TransactionService : ITransactionService
         return ServiceResult.Success();
     }
 
-    public async Task<ServiceResult> DeleteAsync(int transactionId, string userId)
+    public async Task<ServiceResult> DeleteAsync(Guid transactionId, string userId)
     {
         var transaction = await _transactionRepository.GetByIdAndUserIdAsync(userId, transactionId);
         if (transaction == null)
@@ -151,7 +151,7 @@ public class TransactionService : ITransactionService
         return ServiceResult.Success();
     }
 
-    public async Task<ServiceResult> RestoreAsync(int transactionId, string userId)
+    public async Task<ServiceResult> RestoreAsync(Guid transactionId, string userId)
     {
         var transaction = await _transactionRepository.GetByIdAndUserIdAsync(userId, transactionId);
         if (transaction == null)

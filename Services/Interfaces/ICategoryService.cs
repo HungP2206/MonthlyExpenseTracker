@@ -8,7 +8,7 @@ public interface ICategoryService
 
     Task<List<CategoryListItemViewModel>> GetCategoriesAsync(string userId);
 
-    Task<CategoryEditViewModel?> GetEditModelAsync(int categoryId, string userId);
+    Task<CategoryEditViewModel?> GetEditModelAsync(Guid categoryId, string userId);
 
     Task<ServiceResult> UpdateAsync(CategoryEditViewModel model, string userId);
 

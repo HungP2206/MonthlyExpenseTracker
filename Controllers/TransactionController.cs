@@ -75,7 +75,7 @@ namespace MonthlyExpenseTracker.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int transactionId)
+        public async Task<IActionResult> Edit(Guid transactionId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -130,7 +130,7 @@ namespace MonthlyExpenseTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int transactionId)
+        public async Task<IActionResult> Delete(Guid transactionId)
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -153,7 +153,7 @@ namespace MonthlyExpenseTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Restore(int transactionId)
+        public async Task<IActionResult> Restore(Guid transactionId)
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

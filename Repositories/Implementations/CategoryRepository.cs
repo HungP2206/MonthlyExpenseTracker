@@ -23,7 +23,7 @@ public class CategoryRepository : ICategoryRepository
             .ToListAsync();
     }
 
-    public async Task<Category?> GetByIdAndUserIdAsync(string userId, int categoryId)
+    public async Task<Category?> GetByIdAndUserIdAsync(string userId, Guid categoryId)
     {
         return await _context.Categories
             .FirstOrDefaultAsync(x =>
@@ -39,15 +39,15 @@ public class CategoryRepository : ICategoryRepository
            .OrderBy(x => x.Name)
            .ToListAsync();
     }
-    public async Task<bool> ExistsByNameAsync(string userId, string CategoryName)
+    public async Task<bool> ExistsByNameAsync(string userId, string categoryName)
     {
         return await _context.Categories
             .AnyAsync(x => 
             x.ApplicationUserId == userId &&
-            x.Name == CategoryName);
+            x.Name == categoryName);
     }
 
-    public async Task<bool> ExistsByNameExceptIdAsync(string userId, int excludedCategoryId, string name)
+    public async Task<bool> ExistsByNameExceptIdAsync(string userId, Guid excludedCategoryId, string name)
     {
         return await _context.Categories
             .AnyAsync(x =>
@@ -56,7 +56,7 @@ public class CategoryRepository : ICategoryRepository
                 x.Id != excludedCategoryId);
     }
 
-    public async Task<bool> IsUsedAsync(string userId, int CategoryId)
+    public async Task<bool> IsUsedAsync(string userId, Guid CategoryId)
     {
         return await _context.Categories
             .AnyAsync(x =>

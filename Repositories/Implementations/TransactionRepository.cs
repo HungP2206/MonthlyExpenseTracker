@@ -24,7 +24,7 @@ public class TransactionRepository : ITransactionRepository
             .ToListAsync();
     }
 
-    public async Task<Transaction?> GetByIdAndUserIdAsync(string userId, int transactionId)
+    public async Task<Transaction?> GetByIdAndUserIdAsync(string userId, Guid transactionId)
     {
         return await _context.Transactions
             .FirstOrDefaultAsync(x =>
@@ -41,7 +41,7 @@ public class TransactionRepository : ITransactionRepository
            .OrderByDescending(x => x.TransactionDate)
            .ToListAsync();
     }
-    public async Task<Transaction?> GetDeletedByIdAndUserIdAsync(string userId, int transactionId)
+    public async Task<Transaction?> GetDeletedByIdAndUserIdAsync(string userId, Guid transactionId)
     {
         return await _context.Transactions
             .FirstOrDefaultAsync(x =>

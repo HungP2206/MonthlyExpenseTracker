@@ -16,7 +16,7 @@ namespace MonthlyExpenseTracker.ViewModels.Transaction
         public string? Note { get; set; }
 
         [Required]
-        public int CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
         public List<CategoryOptionViewModel> Categories { get; set; } = new();
     }

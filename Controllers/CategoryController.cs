@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using MonthlyExpenseTracker.Services.Interfaces;
 using MonthlyExpenseTracker.ViewModels.Category;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace MonthlyExpenseTracker.Controllers
@@ -10,12 +12,24 @@ namespace MonthlyExpenseTracker.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly IDataProtectionProvider _protectionProvider;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IDataProtectionProvider dataProtectionProvider)
         {
             _categoryService = categoryService;
+            _protectionProvider = dataProtectionProvider;
         }
 
+        private ITimeLimitedDataProtector GetEditProtector(string userId)
+        {
+            var categoryProtector = _protectionProvider.CreateProtector("Category.Edit.v1");
+
+            var userProtector = categoryProtector.CreateProtector(userId);
+
+            var timeLimitedProtector = userProtector.ToTimeLimitedDataProtector();
+
+            return timeLimitedProtector;
+        }
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -65,7 +79,7 @@ namespace MonthlyExpenseTracker.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int categoryId)
+        public async Task<IActionResult> Edit(Guid categoryId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -81,6 +95,10 @@ namespace MonthlyExpenseTracker.Controllers
                 return NotFound();
             }
 
+            model.EditToken = GetEditProtector(userId).Protect(
+                 model.Id.ToString("D"),
+                TimeSpan.FromDays(30));
+
             return View(model);
         }
 
@@ -88,10 +106,6 @@ namespace MonthlyExpenseTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CategoryEditViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -99,6 +113,42 @@ namespace MonthlyExpenseTracker.Controllers
             {
                 return Unauthorized();
             }
+
+            if (string.IsNullOrWhiteSpace(model.EditToken))
+            {
+                return BadRequest();
+            }
+
+            Guid originalCategoryId;
+
+            try
+            {
+                var categoryIdText = GetEditProtector(userId).Unprotect(
+                    model.EditToken, out _);
+
+                if (!Guid.TryParse(categoryIdText, out originalCategoryId) || originalCategoryId == Guid.Empty)
+                {
+                    return BadRequest();
+                }
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            if (model.Id != originalCategoryId)
+            {
+                return BadRequest(
+                    "Danh mục gửi lên không khớp với danh mục đã mở. " +
+                    "Vui lòng mở lại trang Edit.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            model.Id = originalCategoryId;
 
             var result = await _categoryService.UpdateAsync(model, userId);
 

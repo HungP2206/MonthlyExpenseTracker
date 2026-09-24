@@ -10,13 +10,13 @@ public interface ITransactionService
 
     Task<TransactionCreateViewModel> GetTransactionCreateViewModelAsync(string userId);
 
-    Task<TransactionEditViewModel> GetEditModelAsync(int id, string userId);
+    Task<TransactionEditViewModel> GetEditModelAsync(Guid transactionId, string userId);
 
     Task<ServiceResult> UpdateAsync(TransactionEditViewModel model, string userId);
 
-    Task<ServiceResult> DeleteAsync(int transactionId, string userId);
+    Task<ServiceResult> DeleteAsync(Guid transactionId, string userId);
 
-    Task<ServiceResult> RestoreAsync(int transactionId, string userId);
+    Task<ServiceResult> RestoreAsync(Guid transactionId, string userId);
 
 
 }

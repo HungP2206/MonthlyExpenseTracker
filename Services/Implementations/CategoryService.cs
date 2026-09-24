@@ -26,6 +26,7 @@ public class CategoryService : ICategoryService
 
         var category = new Category
         {
+            Id = Guid.NewGuid(),
             Name = name,
             ApplicationUserId = userId,
             IsActive = true,
@@ -49,7 +50,7 @@ public class CategoryService : ICategoryService
         })];
     }
 
-    public async Task<CategoryEditViewModel?> GetEditModelAsync(int categoryId, string userId)
+    public async Task<CategoryEditViewModel?> GetEditModelAsync(Guid categoryId, string userId)
     {
         var category = await _categoryRepository.GetByIdAndUserIdAsync(userId, categoryId);
 
