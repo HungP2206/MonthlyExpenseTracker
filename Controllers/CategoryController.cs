@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using MonthlyExpenseTracker.Services.Interfaces;
 using MonthlyExpenseTracker.ViewModels.Category;
-using System.Globalization;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace MonthlyExpenseTracker.Controllers
 {
@@ -12,17 +12,17 @@ namespace MonthlyExpenseTracker.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
-        private readonly IDataProtectionProvider _protectionProvider;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public CategoryController(ICategoryService categoryService, IDataProtectionProvider dataProtectionProvider)
         {
             _categoryService = categoryService;
-            _protectionProvider = dataProtectionProvider;
+            _dataProtectionProvider = dataProtectionProvider;
         }
 
         private ITimeLimitedDataProtector GetEditProtector(string userId)
         {
-            var categoryProtector = _protectionProvider.CreateProtector("Category.Edit.v1");
+            var categoryProtector = _dataProtectionProvider.CreateProtector("Category.Edit.v1");
 
             var userProtector = categoryProtector.CreateProtector(userId);
 
@@ -30,6 +30,7 @@ namespace MonthlyExpenseTracker.Controllers
 
             return timeLimitedProtector;
         }
+
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -96,7 +97,7 @@ namespace MonthlyExpenseTracker.Controllers
             }
 
             model.EditToken = GetEditProtector(userId).Protect(
-                 model.Id.ToString("D"),
+                model.Id.ToString("D"),
                 TimeSpan.FromDays(30));
 
             return View(model);
@@ -114,9 +115,14 @@ namespace MonthlyExpenseTracker.Controllers
                 return Unauthorized();
             }
 
-            if (string.IsNullOrWhiteSpace(model.EditToken))
+            const string invalidTokenMessage = "Phiên chỉnh sửa không hợp lệ hoặc đã hết hạn. Vui lòng mở lại trang sửa danh mục từ danh sách.";
+
+            if (string.IsNullOrWhiteSpace(model.EditToken) ||
+                model.EditToken.Length % 4 == 1 ||
+                model.EditToken.Any(c => !char.IsAsciiLetterOrDigit(c) && c != '-' && c != '_'))
             {
-                return BadRequest();
+                TempData["ErrorMessage"] = invalidTokenMessage;
+                return RedirectToAction(nameof(Index));
             }
 
             Guid originalCategoryId;
@@ -128,19 +134,20 @@ namespace MonthlyExpenseTracker.Controllers
 
                 if (!Guid.TryParse(categoryIdText, out originalCategoryId) || originalCategoryId == Guid.Empty)
                 {
-                    return BadRequest();
+                    TempData["ErrorMessage"] = invalidTokenMessage;
+                    return RedirectToAction(nameof(Index));
                 }
             }
-            catch
+            catch (CryptographicException)
             {
-                return BadRequest();
+                TempData["ErrorMessage"] = invalidTokenMessage;
+                return RedirectToAction(nameof(Index));
             }
 
             if (model.Id != originalCategoryId)
             {
-                return BadRequest(
-                    "Danh mục gửi lên không khớp với danh mục đã mở. " +
-                    "Vui lòng mở lại trang Edit.");
+                TempData["ErrorMessage"] = "Danh mục gửi lên không khớp với danh mục đã mở. Vui lòng mở lại trang Edit.";
+                return RedirectToAction(nameof(Index));
             }
 
             if (!ModelState.IsValid)

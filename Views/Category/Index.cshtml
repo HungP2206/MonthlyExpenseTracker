@@ -3,62 +3,76 @@
 @{
     ViewData["Tittile"] = "Categories";
 }
+@if (TempData["ErrorMessage"] is string message)
+{
+    <div class="alert alert-warning" role="alert">
+        @message
+    </div>
+}
 
 <h1>Categories</h1>
 <a asp-action="Create" class="btn btn-sm btn-primary">Create</a>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Function</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var category in Model)
-        {
+    @if(Model.Count == 0)
+    {
+        <p>Bạn chưa có danh mục nào.</p>
+    }
+
+    else
+    {
+        <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@category.Name</td>
-                <td>
-                    @if (category.IsActive)
-                    {
-                        <span>Active</span>
-                    }
-                    else
-                    {
-                        <span>Inactive</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-categoryId="@category.Id" class="btn btn-sm btn-warning">Edit</a>
-               
-                    @if (category.IsActive)
-                    {
-                        <form asp-action="SetDeactivateStatus" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="Id" value="@category.Id" />
-                            <input type="hidden" name="Name" value="@category.Name" />
-                            <input type="hidden" name="IsActive" value="@category.IsActive.ToString()" />
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn ngừng sử dụng danh mục này không?');">
-                                Deactivate
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form asp-action="SetActivateStatus" asp-route-id="@category.Id" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="Id" value="@category.Id"/>
-                            <input type="hidden" name="Name" value="@category.Name" />
-                            <input type="hidden" name="IsActive" value="@category.IsActive.ToString()" />
-                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc muốn kích hoạt lại danh mục này không?');">
-                                Activate
-                            </button>
-                        </form>
-                    }
-                </td>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Function</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>
+                        @if (category.IsActive)
+                        {
+                            <span>Active</span>
+                        }
+                        else
+                        {
+                            <span>Inactive</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-categoryId="@category.Id" class="btn btn-sm btn-warning">Edit</a>
+
+                        @if (category.IsActive)
+                        {
+                            <form asp-action="SetDeactivateStatus" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@category.Id" />
+                                <input type="hidden" name="Name" value="@category.Name" />
+                                <input type="hidden" name="IsActive" value="@category.IsActive.ToString()" />
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn ngừng sử dụng danh mục này không?');">
+                                    Deactivate
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="SetActivateStatus" asp-route-id="@category.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@category.Id" />
+                                <input type="hidden" name="Name" value="@category.Name" />
+                                <input type="hidden" name="IsActive" value="@category.IsActive.ToString()" />
+                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc muốn kích hoạt lại danh mục này không?');">
+                                    Activate
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
 

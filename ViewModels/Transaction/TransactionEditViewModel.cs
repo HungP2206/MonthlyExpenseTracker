@@ -14,7 +14,9 @@ namespace MonthlyExpenseTracker.ViewModels.Transaction
 
         public Guid CategoryId { get; set; }
 
-        public bool isDelete { get; set; }
+        public bool IsDelete { get; set; }
+
+        public string EditToken { get; set; }
 
         public List<CategoryOptionViewModel> Categories { get; set; } = new();
     }

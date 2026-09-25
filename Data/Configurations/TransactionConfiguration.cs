@@ -27,6 +27,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         // Ngày phát sinh giao dịch là bắt buộc
         builder.Property(x => x.TransactionDate)
+            .HasColumnType("date")
             .IsRequired();
 
         // Note không bắt buộc vì entity dùng string?
